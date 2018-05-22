@@ -1,0 +1,71 @@
+<h3 class="live-campaigns-title">Live Campaigns</h3>
+<span *ngIf="liveCampaigns && liveCampaigns.length === 0" 
+      class="text-uppercase">No Live Campaigns</span>
+<accordion class="accordions live-campaigns" *ngIf="liveCampaigns && liveCampaigns.length > 0">
+  <accordion-group
+      class="accordion-groups"
+      [panelClass]="'live-campaign'"
+      #group
+      [isOpen]="group?.isOpen || (i === 0)"
+      *ngFor="let campaign of liveCampaigns; let i = index;">
+      <div accordion-heading>
+          <a (click)="onCampaignSelected.emit(campaign.campaign)" class="campaign-name">{{createHeaderText(campaign.campaign.name)}}</a>
+          <i class="pull-right float-xs-right fa fa-2x" style="margin-top: -4px;"
+          [ngClass]="{'fa-angle-double-up': group?.isOpen, 'fa-angle-double-down': !group?.isOpen}"></i>
+          <span class="pull-right pull-xs-left sub-title">
+            <span class="campaign-start-date">{{campaign.campaign.startDate | date}}</span>
+            <span class="campaign-date-separator">-</span>
+            <span class="campaign-end-date">{{campaign.campaign.endDate | date}}</span>
+            <span class="campaign-time-remaining">
+              &nbsp; | &nbsp;Time Remaining:&nbsp;
+              <app-date-duration [startDate]="this.now"
+                                 [endDate]="campaign.campaign.endDate"></app-date-duration>
+            </span>
+          </span>
+        </div>
+       <div class="row campaign-goals">
+        <div class="col-xs-12 text-center"
+            *ngIf="!campaign.redemptionGoal || !campaign.loanVolumeGoal || !campaign.xsellGoal">
+         <img src="../../../assets/images/loading/no-trespassing-loader-160x20.gif"
+              alt="Loading..." />
+        </div>
+        <div class="col-md-4 text-center campaign-goal redemption-goal"
+             *ngIf="campaign.redemptionGoal && campaign.loanVolumeGoal && campaign.xsellGoal">
+          <app-charts *ngIf="campaign.redemptionGoal && campaign.loanVolumeGoal && campaign.xsellGoal"
+                      [dataset]="[campaign.redemptionGoal.goal, campaign.redemptionGoal.current]"
+                      [configs]="campaign.redemptionGoalConfig"></app-charts>
+          <div class="chart-label text-uppercase">
+            <strong>
+              Redemption Goal:
+              <span class="goal-value">{{campaign.redemptionGoal?.goal | percent:'1.0-2'}}</span>
+            </strong>
+          </div>
+        </div>
+        <div class="col-md-4 text-center campaign-goal loan-volume-goal"
+             *ngIf="campaign.redemptionGoal && campaign.loanVolumeGoal && campaign.xsellGoal">
+            <app-charts *ngIf="campaign.redemptionGoal && campaign.loanVolumeGoal && campaign.xsellGoal"
+                        [dataset]="[campaign.loanVolumeGoal.goal, campaign.loanVolumeGoal.current]"
+                        [configs]="campaign.loanVolumeGoalConfig"></app-charts>
+            <div class="chart-label text-uppercase">
+              <strong>
+                Loan Volume Goal:
+                <span class="goal-value">{{campaign.loanVolumeGoal?.goal | currency:'USD'}}</span>
+              </strong>
+            </div>
+        </div>
+        <div class="col-md-4 text-center campaign-goal xsell-goal"
+             *ngIf="campaign.redemptionGoal && campaign.loanVolumeGoal && campaign.xsellGoal">
+          <app-charts *ngIf="campaign.redemptionGoal && campaign.loanVolumeGoal && campaign.xsellGoal"
+                      [dataset]="[campaign.xsellGoal.goal, campaign.xsellGoal.current]"
+                      [configs]="campaign.xsellGoalConfig"></app-charts>
+
+          <div class="chart-label text-uppercase">
+            <strong>
+              X-Sell Goal:
+              <span class="goal-value">{{campaign.xsellGoal?.goal | number}}</span>
+            </strong>
+          </div>
+        </div>
+       </div>
+    </accordion-group>
+ </accordion>
